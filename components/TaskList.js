@@ -1,16 +1,33 @@
-// filepath: /home/lipari_m/Projet/to-do-list/components/TaskList.js
+'use client';
+
+import Link from 'next/link';
+
 export default function TaskList({ tasks, onTaskDeleted }) {
   const handleDelete = async (id) => {
-    await fetch(`/api/tasks/${id}`, { method: 'DELETE' });
-    onTaskDeleted();
+    try {
+      const res = await fetch(`/api/tasks/${id}`, { method: 'DELETE' });
+      if (!res.ok) {
+        throw new Error('Failed to delete task');
+      }
+      if (onTaskDeleted) onTaskDeleted();
+    } catch (error) {
+      console.error('Error deleting task:', error);
+    }
   };
 
   return (
-    <ul>
+    <ul className="list-disc pl-5">
       {tasks.map((task) => (
-        <li key={task.id}>
-          {task.content}
-          <button onClick={() => handleDelete(task.id)}>Delete</button>
+        <li key={task.id} className="flex justify-between items-center mb-2 text-black">
+          <Link href={`/task/${task.id}`} className="text-blue-500 underline">
+            {task.name}
+          </Link>
+          <button
+            onClick={() => handleDelete(task.id)}
+            className="ml-2 p-1 bg-red-500 text-white rounded"
+          >
+            Supprimer
+          </button>
         </li>
       ))}
     </ul>
