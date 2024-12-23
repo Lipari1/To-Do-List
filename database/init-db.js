@@ -1,4 +1,4 @@
-import { openDb } from '../database/db.js';
+import { openDb } from './db.js';
 
 function initDb() {
   try {
