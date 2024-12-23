@@ -1,10 +1,6 @@
-import sqlite3 from 'sqlite3';
-import { open } from 'sqlite';
+import Database from 'better-sqlite3';
 
-// Ouverture de la base de données SQLite
-export async function openDb() {
-  return open({
-    filename: './tasks.db',
-    driver: sqlite3.Database,
-  });
+export function openDb() {
+  const db = new Database('./tasks.db');
+  return db;
 }
