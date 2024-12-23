@@ -92,7 +92,7 @@ export default function TaskDetail() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name: `Task for ${selectedDate.toDateString()} ${Date.now()}`, content: selectedTaskContent, date: selectedDate.toISOString() }),
+        body: JSON.stringify({ name: `Task for ${selectedDate.toDateString()} ${Date.now()}`, content: selectedTaskContent, date: selectedDate.toISOString(), isDailyTask: true }),
       });
       console.log('Response status:', res.status);
       const text = await res.text();
@@ -155,7 +155,7 @@ export default function TaskDetail() {
         <h2 className="text-xl font-bold mb-4">Tâches pour {selectedDate ? selectedDate.toDateString() : '...'}</h2>
         <ul>
           {tasks
-            .filter((task) => new Date(task.date).toDateString() === (selectedDate ? selectedDate.toDateString() : ''))
+            .filter((task) => new Date(task.date).toDateString() === (selectedDate ? selectedDate.toDateString() : '') && task.isDailyTask)
             .map((task) => (
               <li key={task.id} className="mb-2 flex items-center">
                 <span className={`text-white ${task.completed ? 'line-through' : ''}`}>{task.content}</span>

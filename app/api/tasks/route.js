@@ -9,7 +9,7 @@ export async function GET(request) {
     if (id) {
       // Récupérer une tâche spécifique par ID
       const task = db
-        .prepare('SELECT id, name, content, date FROM tasks WHERE id = ?')
+        .prepare('SELECT id, name, content, date, isDailyTask FROM tasks WHERE id = ?')
         .get(id);
 
       if (!task) {
@@ -29,7 +29,7 @@ export async function GET(request) {
     }
 
     // Récupérer toutes les tâches (uniquement `id` et `name` pour la liste principale)
-    const tasks = db.prepare('SELECT id, name, content, date FROM tasks').all();
+    const tasks = db.prepare('SELECT id, name, content, date, isDailyTask FROM tasks').all();
 
     return new Response(JSON.stringify(tasks), {
       status: 200,
@@ -51,7 +51,7 @@ export async function POST(request) {
   const db = openDb();
 
   try {
-    const { name, content, date } = await request.json();
+    const { name, content, date, isDailyTask } = await request.json();
 
     if (!name || !date) {
       return new Response(
@@ -76,8 +76,8 @@ export async function POST(request) {
     }
 
     const result = db
-      .prepare('INSERT INTO tasks (name, content, date) VALUES (?, ?, ?)')
-      .run(name, content, date);
+      .prepare('INSERT INTO tasks (name, content, date, isDailyTask) VALUES (?, ?, ?, ?)')
+      .run(name, content, date, isDailyTask ? 1 : 0);
 
     return new Response(
       JSON.stringify({
@@ -85,6 +85,7 @@ export async function POST(request) {
         name,
         content,
         date,
+        isDailyTask: isDailyTask ? 1 : 0,
       }),
       {
         status: 201,

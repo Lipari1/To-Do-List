@@ -14,7 +14,9 @@ export default function TaskManager() {
         throw new Error('Failed to fetch tasks');
       }
       const data = await res.json();
-      setTasks(data);
+      // Filtrer les tâches pour exclure les tâches du jour
+      const filteredTasks = data.filter(task => !task.isDailyTask);
+      setTasks(filteredTasks);
     } catch (error) {
       console.error('Error fetching tasks:', error);
     }
