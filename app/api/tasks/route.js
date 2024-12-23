@@ -63,6 +63,18 @@ export async function POST(request) {
       );
     }
 
+    // Vérifier si une tâche avec le même nom existe déjà
+    const existingTask = db.prepare('SELECT id FROM tasks WHERE name = ?').get(name);
+    if (existingTask) {
+      return new Response(
+        JSON.stringify({ error: 'Task with the same name already exists' }),
+        {
+          status: 400,
+          headers: { 'Content-Type': 'application/json' },
+        }
+      );
+    }
+
     const result = db
       .prepare('INSERT INTO tasks (name, content) VALUES (?, ?)')
       .run(name, '');

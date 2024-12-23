@@ -16,11 +16,11 @@ export default function TaskList({ tasks, onTaskDeleted }) {
   };
 
   return (
-    <ul className="list-disc pl-5">
-      {tasks.map((task) => (
+    <ul className="list-decimal pl-5">
+      {tasks.map((task, index) => (
         <li key={task.id} className="flex justify-between items-center mb-2 text-black">
           <Link href={`/task/${task.id}`} className="text-blue-500 underline">
-            {task.name}
+            {index + 1}. {task.name}
           </Link>
           <button
             onClick={() => handleDelete(task.id)}

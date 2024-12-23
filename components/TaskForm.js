@@ -4,6 +4,7 @@ import { useState } from 'react';
 
 export default function TaskForm({ onTaskAdded }) {
   const [name, setName] = useState('');
+  const [error, setError] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -26,12 +27,15 @@ export default function TaskForm({ onTaskAdded }) {
       console.log('Response data:', data);
       if (!res.ok) {
         console.error('Error response:', data);
-        throw new Error(data.error || 'Failed to add task');
+        setError(data.error || 'Failed to add task');
+        return;
       }
       setName('');
+      setError('');
       if (onTaskAdded) onTaskAdded();
     } catch (error) {
       console.error('Error adding task:', error);
+      setError('Failed to add task');
     }
   };
 
@@ -44,6 +48,7 @@ export default function TaskForm({ onTaskAdded }) {
         placeholder="Nom de la tâche"
         className="w-full p-2 border border-gray-300 rounded mb-2 text-black"
       />
+      {error && <p className="text-red-500 mb-2">{error}</p>}
       <button type="submit" className="w-full p-2 bg-blue-500 text-white rounded">
         Ajouter
       </button>
