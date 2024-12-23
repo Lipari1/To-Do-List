@@ -107,6 +107,29 @@ export default function TaskDetail() {
     }
   };
 
+  const handleDeleteTask = async (taskId) => {
+    try {
+      const res = await fetch(`/api/tasks/${taskId}`, {
+        method: 'DELETE',
+      });
+      if (!res.ok) {
+        throw new Error('Failed to delete task');
+      }
+      alert('Tâche supprimée avec succès !');
+      fetchTasks();
+    } catch (error) {
+      console.error('Error deleting task:', error);
+    }
+  };
+
+  const handleToggleTask = (taskId) => {
+    setTasks((prevTasks) =>
+      prevTasks.map((task) =>
+        task.id === taskId ? { ...task, completed: !task.completed } : task
+      )
+    );
+  };
+
   const tileClassName = ({ date, view }) => {
     if (view === 'month') {
       const taskDates = tasks.map((task) => new Date(task.date).toDateString());
@@ -129,8 +152,20 @@ export default function TaskDetail() {
           {tasks
             .filter((task) => new Date(task.date).toDateString() === (selectedDate ? selectedDate.toDateString() : ''))
             .map((task) => (
-              <li key={task.id} className="mb-2">
-                <span className="text-black">{task.content}</span>
+              <li key={task.id} className="mb-2 flex items-center">
+                <span className={`text-white ${task.completed ? 'line-through' : ''}`}>{task.content}</span>
+                <button
+                  onClick={() => handleToggleTask(task.id)}
+                  className="ml-2 p-1 bg-gray-600 text-white rounded"
+                >
+                  &#x2713;
+                </button>
+                <button
+                  onClick={() => handleDeleteTask(task.id)}
+                  className="ml-2 p-1 bg-red-600 text-white rounded"
+                >
+                  &#x2715;
+                </button>
               </li>
             ))}
         </ul>

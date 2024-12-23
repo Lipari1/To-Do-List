@@ -96,3 +96,7 @@ h1 {
 .overflow-y-auto {
   overflow-y: auto;
 }
+
+.line-through {
+  text-decoration: line-through;
+}
