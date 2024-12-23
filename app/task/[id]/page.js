@@ -92,7 +92,7 @@ export default function TaskDetail() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name: `Task for ${selectedDate.toDateString()}`, content: selectedTaskContent, date: selectedDate.toISOString() }),
+        body: JSON.stringify({ name: `Task for ${selectedDate.toDateString()} ${Date.now()}`, content: selectedTaskContent, date: selectedDate.toISOString() }),
       });
       console.log('Response status:', res.status);
       const text = await res.text();
@@ -102,6 +102,7 @@ export default function TaskDetail() {
       }
       alert('Tâche enregistrée avec succès !');
       fetchTasks();
+      setSelectedTaskContent(''); // Clear the input field after saving
     } catch (error) {
       console.error('Error saving task:', error);
     }

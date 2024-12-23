@@ -63,7 +63,7 @@ export async function POST(request) {
       );
     }
 
-    // Vérifier si une tâche avec le même nom existe déjà
+    // Vérifier si une tâche avec le même nom et la même date existe déjà
     const existingTask = db.prepare('SELECT id FROM tasks WHERE name = ? AND date = ?').get(name, date);
     if (existingTask) {
       return new Response(
