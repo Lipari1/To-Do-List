@@ -11,6 +11,13 @@ export default function TaskDetail() {
   const [task, setTask] = useState(null);
   const [content, setContent] = useState('');
   const [date, setDate] = useState(new Date());
+  const [tasks, setTasks] = useState([]);
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedTaskContent, setSelectedTaskContent] = useState('');
+
+  useEffect(() => {
+    fetchTasks();
+  }, []);
 
   useEffect(() => {
     if (id) {
@@ -30,6 +37,19 @@ export default function TaskDetail() {
     }
   }, [id]);
 
+  const fetchTasks = async () => {
+    try {
+      const res = await fetch('/api/tasks');
+      if (!res.ok) {
+        throw new Error('Failed to fetch tasks');
+      }
+      const data = await res.json();
+      setTasks(data);
+    } catch (error) {
+      console.error('Error fetching tasks:', error);
+    }
+  };
+
   const handleSave = async () => {
     try {
       const res = await fetch(`/api/tasks/${id}`, {
@@ -43,6 +63,7 @@ export default function TaskDetail() {
         throw new Error('Failed to save task');
       }
       alert('Description mise à jour avec succès !');
+      fetchTasks();
     } catch (error) {
       console.error('Error saving task:', error);
     }
@@ -53,7 +74,47 @@ export default function TaskDetail() {
   };
 
   const handleDateChange = (date) => {
-    setDate(date);
+    setSelectedDate(date);
+    const taskForDate = tasks.find((task) => new Date(task.date).toDateString() === date.toDateString());
+    setSelectedTaskContent(taskForDate ? taskForDate.content : '');
+  };
+
+  const handleSelectedTaskContentChange = (e) => {
+    setSelectedTaskContent(e.target.value);
+  };
+
+  const handleSaveSelectedTask = async () => {
+    try {
+      console.log('Saving task for date:', selectedDate);
+      console.log('Task content:', selectedTaskContent);
+      const res = await fetch('/api/tasks', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name: `Task for ${selectedDate.toDateString()}`, content: selectedTaskContent, date: selectedDate.toISOString() }),
+      });
+      console.log('Response status:', res.status);
+      const text = await res.text();
+      console.log('Response text:', text);
+      if (!res.ok) {
+        throw new Error('Failed to save task');
+      }
+      alert('Tâche enregistrée avec succès !');
+      fetchTasks();
+    } catch (error) {
+      console.error('Error saving task:', error);
+    }
+  };
+
+  const tileClassName = ({ date, view }) => {
+    if (view === 'month') {
+      const taskDates = tasks.map((task) => new Date(task.date).toDateString());
+      if (taskDates.includes(date.toDateString())) {
+        return 'bg-green-500 text-white';
+      }
+    }
+    return null;
   };
 
   if (!task) {
@@ -61,8 +122,20 @@ export default function TaskDetail() {
   }
 
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center">
-      <div className="w-full max-w-md p-4 bg-white rounded shadow-md">
+    <div className="min-h-screen bg-black flex">
+      <div className="w-1/4 p-4 bg-gray-800 text-white overflow-y-auto">
+        <h2 className="text-xl font-bold mb-4">Tâches pour {selectedDate ? selectedDate.toDateString() : '...'}</h2>
+        <ul>
+          {tasks
+            .filter((task) => new Date(task.date).toDateString() === (selectedDate ? selectedDate.toDateString() : ''))
+            .map((task) => (
+              <li key={task.id} className="mb-2">
+                <span className="text-black">{task.content}</span>
+              </li>
+            ))}
+        </ul>
+      </div>
+      <div className="w-3/4 p-4 bg-white rounded shadow-md">
         <h1 className="text-2xl font-bold mb-4 text-center text-black">{task.name}</h1>
         <textarea
           className="w-full p-2 border border-gray-300 rounded mb-2 text-black"
@@ -70,19 +143,37 @@ export default function TaskDetail() {
           onChange={handleContentChange}
           rows="10"
         />
-        <Calendar
-          onChange={handleDateChange}
-          value={date}
-          className="mb-4"
-        />
         <button
           onClick={handleSave}
           className="w-full p-2 bg-blue-500 text-white rounded mb-2"
         >
-          Enregistrer
+          Enregistrer la tâche principale
         </button>
+        <Calendar
+          onChange={handleDateChange}
+          value={selectedDate || date}
+          className="mb-4"
+          tileClassName={tileClassName}
+        />
+        {selectedDate && (
+          <div className="mb-4">
+            <h2 className="text-xl font-bold mb-2 text-black">Tâche pour {selectedDate.toDateString()}</h2>
+            <textarea
+              className="w-full p-2 border border-gray-300 rounded mb-2 text-black"
+              value={selectedTaskContent}
+              onChange={handleSelectedTaskContentChange}
+              rows="5"
+            />
+            <button
+              onClick={handleSaveSelectedTask}
+              className="w-full p-2 bg-blue-500 text-white rounded mb-2"
+            >
+              Enregistrer la tâche du jour
+            </button>
+          </div>
+        )}
         <button
-          onClick={() => router.back()}
+          onClick={() => router.push('/')}
           className="w-full p-2 bg-gray-500 text-white rounded"
         >
           Retour

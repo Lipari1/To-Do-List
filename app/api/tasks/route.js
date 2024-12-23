@@ -29,7 +29,7 @@ export async function GET(request) {
     }
 
     // Récupérer toutes les tâches (uniquement `id` et `name` pour la liste principale)
-    const tasks = db.prepare('SELECT id, name FROM tasks').all();
+    const tasks = db.prepare('SELECT id, name, content, date FROM tasks').all();
 
     return new Response(JSON.stringify(tasks), {
       status: 200,
@@ -51,11 +51,11 @@ export async function POST(request) {
   const db = openDb();
 
   try {
-    const { name, date } = await request.json();
+    const { name, content, date } = await request.json();
 
-    if (!name) {
+    if (!name || !date) {
       return new Response(
-        JSON.stringify({ error: 'Name is required' }),
+        JSON.stringify({ error: 'Name and date are required' }),
         {
           status: 400,
           headers: { 'Content-Type': 'application/json' },
@@ -64,10 +64,10 @@ export async function POST(request) {
     }
 
     // Vérifier si une tâche avec le même nom existe déjà
-    const existingTask = db.prepare('SELECT id FROM tasks WHERE name = ?').get(name);
+    const existingTask = db.prepare('SELECT id FROM tasks WHERE name = ? AND date = ?').get(name, date);
     if (existingTask) {
       return new Response(
-        JSON.stringify({ error: 'Task with the same name already exists' }),
+        JSON.stringify({ error: 'Task with the same name and date already exists' }),
         {
           status: 400,
           headers: { 'Content-Type': 'application/json' },
@@ -77,14 +77,14 @@ export async function POST(request) {
 
     const result = db
       .prepare('INSERT INTO tasks (name, content, date) VALUES (?, ?, ?)')
-      .run(name, '', date || new Date().toISOString());
+      .run(name, content, date);
 
     return new Response(
       JSON.stringify({
         id: result.lastInsertRowid,
         name,
-        content: '',
-        date: date || new Date().toISOString(),
+        content,
+        date,
       }),
       {
         status: 201,

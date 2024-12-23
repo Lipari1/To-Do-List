@@ -21,7 +21,8 @@ function initDb() {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
         content TEXT NOT NULL,
-        date TEXT NOT NULL
+        date TEXT NOT NULL,
+        isDailyTask INTEGER NOT NULL DEFAULT 0
       )
     `);
     console.log('Database initialized');

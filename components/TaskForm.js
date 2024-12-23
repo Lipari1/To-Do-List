@@ -15,7 +15,7 @@ export default function TaskForm({ onTaskAdded }) {
       const res = await fetch('/api/tasks', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, date: new Date().toISOString() }),
+        body: JSON.stringify({ name, date: new Date().toISOString(), content: '', isDailyTask: false }),
       });
       console.log('Response status:', res.status);
       const text = await res.text();
