@@ -89,6 +89,10 @@ h1 {
   background-color: #38a169 !important; /* Couleur verte pour les jours avec des tâches */
 }
 
+.bg-red-500 {
+  background-color: #e53e3e !important; /* Couleur rouge pour les jours passés avec des tâches */
+}
+
 .text-white {
   color: white !important;
 }

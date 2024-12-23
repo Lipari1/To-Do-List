@@ -133,7 +133,11 @@ export default function TaskDetail() {
   const tileClassName = ({ date, view }) => {
     if (view === 'month') {
       const taskDates = tasks.map((task) => new Date(task.date).toDateString());
+      const today = new Date();
       if (taskDates.includes(date.toDateString())) {
+        if (date < today) {
+          return 'bg-red-500 text-white';
+        }
         return 'bg-green-500 text-white';
       }
     }
