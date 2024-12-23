@@ -25,3 +25,62 @@ body {
 h1 {
   color: var(--text-color);
 }
+
+.react-calendar {
+  background-color: #1a1a1a;
+  color: white;
+  border: none;
+  border-radius: 8px;
+}
+
+.react-calendar__tile {
+  background-color: #333;
+  color: white;
+}
+
+.react-calendar__tile--active {
+  background-color: #555;
+  color: white;
+}
+
+.react-calendar__tile--now {
+  background-color: #444;
+  color: white;
+}
+
+.react-calendar__navigation button {
+  color: black; /* Changer la couleur des boutons de navigation en noir */
+  background-color: #1a1a1a;
+}
+
+.react-calendar__navigation button:hover {
+  background-color: #333;
+}
+
+.react-calendar__month-view__days__day {
+  color: black; /* Changer la couleur des jours en noir */
+}
+
+.react-calendar__month-view__weekdays {
+  color: black; /* Changer la couleur des jours de la semaine en noir */
+}
+
+.react-calendar__month-view__weekdays__weekday {
+  color: black; /* Changer la couleur des jours de la semaine en noir */
+}
+
+.react-calendar__month-view__days__day--neighboringMonth {
+  color: black; /* Changer la couleur des jours des mois voisins en noir */
+}
+
+.react-calendar__year-view__months__month {
+  color: black; /* Changer la couleur des mois en noir */
+}
+
+.react-calendar__decade-view__years__year {
+  color: black; /* Changer la couleur des années en noir */
+}
+
+.react-calendar__century-view__decades__decade {
+  color: black; /* Changer la couleur des décennies en noir */
+}

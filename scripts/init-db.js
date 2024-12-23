@@ -20,7 +20,8 @@ function initDb() {
       CREATE TABLE IF NOT EXISTS tasks (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
-        content TEXT NOT NULL
+        content TEXT NOT NULL,
+        date TEXT NOT NULL
       )
     `);
     console.log('Database initialized');

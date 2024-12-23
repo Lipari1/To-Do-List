@@ -9,7 +9,7 @@ export async function GET(request) {
     if (id) {
       // Récupérer une tâche spécifique par ID
       const task = db
-        .prepare('SELECT id, name, content FROM tasks WHERE id = ?')
+        .prepare('SELECT id, name, content, date FROM tasks WHERE id = ?')
         .get(id);
 
       if (!task) {
@@ -51,7 +51,7 @@ export async function POST(request) {
   const db = openDb();
 
   try {
-    const { name } = await request.json();
+    const { name, date } = await request.json();
 
     if (!name) {
       return new Response(
@@ -76,14 +76,15 @@ export async function POST(request) {
     }
 
     const result = db
-      .prepare('INSERT INTO tasks (name, content) VALUES (?, ?)')
-      .run(name, '');
+      .prepare('INSERT INTO tasks (name, content, date) VALUES (?, ?, ?)')
+      .run(name, '', date || new Date().toISOString());
 
     return new Response(
       JSON.stringify({
         id: result.lastInsertRowid,
         name,
         content: '',
+        date: date || new Date().toISOString(),
       }),
       {
         status: 201,
