@@ -63,11 +63,12 @@ export async function POST(request) {
       );
     }
 
-    // Vérifier si une tâche avec le même nom et la même date existe déjà
-    const existingTask = db.prepare('SELECT id FROM tasks WHERE name = ? AND date = ?').get(name, date);
-    if (existingTask) {
+    // Vérifier si une tâche avec le même nom existe déjà
+    const existingTask = db.prepare('SELECT id FROM tasks WHERE name = ?').get(name);
+    const existingDailyTask = db.prepare('SELECT id FROM daily_tasks WHERE content = ?').get(name);
+    if (existingTask || existingDailyTask) {
       return new Response(
-        JSON.stringify({ error: 'Task with the same name and date already exists' }),
+        JSON.stringify({ error: 'Task with the same name already exists' }),
         {
           status: 400,
           headers: { 'Content-Type': 'application/json' },

@@ -11,42 +11,43 @@ export default function TaskDetail() {
   const [task, setTask] = useState(null);
   const [content, setContent] = useState('');
   const [date, setDate] = useState(new Date());
-  const [tasks, setTasks] = useState([]);
+  const [dailyTasks, setDailyTasks] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTaskContent, setSelectedTaskContent] = useState('');
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    fetchTasks();
-  }, []);
-
-  useEffect(() => {
-    if (id) {
-      fetch(`/api/tasks?id=${id}`)
-        .then((res) => {
-          if (!res.ok) {
-            throw new Error('Failed to fetch task');
-          }
-          return res.json();
-        })
-        .then((data) => {
-          setTask(data);
-          setContent(data.content);
-          setDate(new Date(data.date));
-        })
-        .catch((error) => console.error('Error fetching task:', error));
-    }
+    fetchTask();
+    fetchDailyTasks();
   }, [id]);
 
-  const fetchTasks = async () => {
+  const fetchTask = async () => {
     try {
-      const res = await fetch('/api/tasks');
+      const res = await fetch(`/api/tasks?id=${id}`);
       if (!res.ok) {
-        throw new Error('Failed to fetch tasks');
+        throw new Error('Failed to fetch task');
       }
       const data = await res.json();
-      setTasks(data);
+      console.log('Fetched Task:', data);
+      setTask(data);
+      setContent(data.content);
+      setDate(new Date(data.date));
     } catch (error) {
-      console.error('Error fetching tasks:', error);
+      console.error('Error fetching task:', error);
+    }
+  };
+
+  const fetchDailyTasks = async () => {
+    try {
+      const res = await fetch(`/api/daily-tasks?taskId=${id}`);
+      if (!res.ok) {
+        throw new Error('Failed to fetch daily tasks');
+      }
+      const data = await res.json();
+      console.log('Fetched Daily Tasks:', data);
+      setDailyTasks(data);
+    } catch (error) {
+      console.error('Error fetching daily tasks:', error);
     }
   };
 
@@ -63,7 +64,7 @@ export default function TaskDetail() {
         throw new Error('Failed to save task');
       }
       alert('Description mise à jour avec succès !');
-      fetchTasks();
+      fetchTask();
     } catch (error) {
       console.error('Error saving task:', error);
     }
@@ -75,7 +76,7 @@ export default function TaskDetail() {
 
   const handleDateChange = (date) => {
     setSelectedDate(date);
-    const taskForDate = tasks.find((task) => new Date(task.date).toDateString() === date.toDateString());
+    const taskForDate = dailyTasks.find((task) => new Date(task.date).toDateString() === date.toDateString());
     setSelectedTaskContent(taskForDate ? taskForDate.content : '');
   };
 
@@ -85,46 +86,44 @@ export default function TaskDetail() {
 
   const handleSaveSelectedTask = async () => {
     try {
-      console.log('Saving task for date:', selectedDate);
-      console.log('Task content:', selectedTaskContent);
-      const res = await fetch('/api/tasks', {
+      const res = await fetch('/api/daily-tasks', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name: `Task for ${selectedDate.toDateString()} ${Date.now()}`, content: selectedTaskContent, date: selectedDate.toISOString(), isDailyTask: true }),
+        body: JSON.stringify({ taskId: id, content: selectedTaskContent, date: selectedDate.toISOString() }),
       });
-      console.log('Response status:', res.status);
-      const text = await res.text();
-      console.log('Response text:', text);
       if (!res.ok) {
-        throw new Error('Failed to save task');
+        const data = await res.json();
+        setError(data.error || 'Failed to save daily task');
+        throw new Error('Failed to save daily task');
       }
       alert('Tâche enregistrée avec succès !');
-      fetchTasks();
+      fetchDailyTasks();
       setSelectedTaskContent(''); // Clear the input field after saving
+      setError(''); // Clear any previous error
     } catch (error) {
-      console.error('Error saving task:', error);
+      console.error('Error saving daily task:', error);
     }
   };
 
   const handleDeleteTask = async (taskId) => {
     try {
-      const res = await fetch(`/api/tasks/${taskId}`, {
+      const res = await fetch(`/api/daily-tasks?id=${taskId}`, {
         method: 'DELETE',
       });
       if (!res.ok) {
         throw new Error('Failed to delete task');
       }
       alert('Tâche supprimée avec succès !');
-      fetchTasks();
+      fetchDailyTasks();
     } catch (error) {
       console.error('Error deleting task:', error);
     }
   };
 
   const handleToggleTask = (taskId) => {
-    setTasks((prevTasks) =>
+    setDailyTasks((prevTasks) =>
       prevTasks.map((task) =>
         task.id === taskId ? { ...task, completed: !task.completed } : task
       )
@@ -133,7 +132,7 @@ export default function TaskDetail() {
 
   const tileClassName = ({ date, view }) => {
     if (view === 'month') {
-      const taskDates = tasks.map((task) => new Date(task.date).toDateString());
+      const taskDates = dailyTasks.map((task) => new Date(task.date).toDateString());
       const today = new Date();
       if (taskDates.includes(date.toDateString())) {
         if (date < today) {
@@ -154,8 +153,8 @@ export default function TaskDetail() {
       <div className="w-1/4 p-4 bg-gray-800 text-white overflow-y-auto">
         <h2 className="text-xl font-bold mb-4">Tâches pour {selectedDate ? selectedDate.toDateString() : '...'}</h2>
         <ul>
-          {tasks
-            .filter((task) => new Date(task.date).toDateString() === (selectedDate ? selectedDate.toDateString() : '') && task.isDailyTask)
+          {dailyTasks
+            .filter((task) => new Date(task.date).toDateString() === (selectedDate ? selectedDate.toDateString() : ''))
             .map((task) => (
               <li key={task.id} className="mb-2 flex items-center">
                 <span className={`text-white ${task.completed ? 'line-through' : ''}`}>{task.content}</span>
@@ -210,6 +209,7 @@ export default function TaskDetail() {
             >
               Enregistrer la tâche du jour
             </button>
+            {error && <p className="text-red-500">{error}</p>}
           </div>
         )}
         <button

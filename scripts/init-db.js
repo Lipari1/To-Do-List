@@ -23,7 +23,14 @@ function initDb() {
         content TEXT NOT NULL,
         date TEXT NOT NULL,
         isDailyTask INTEGER NOT NULL DEFAULT 0
-      )
+      );
+      CREATE TABLE IF NOT EXISTS daily_tasks (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        task_id INTEGER NOT NULL,
+        content TEXT NOT NULL,
+        date TEXT NOT NULL,
+        FOREIGN KEY (task_id) REFERENCES tasks(id)
+      );
     `);
     console.log('Database initialized');
   } catch (error) {
