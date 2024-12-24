@@ -39,13 +39,13 @@ export default function TaskDetail({ params }) {
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">Modifier la Tâche</h1>
       <textarea
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
+        value={content} // Valeur du contenu de la tâche
+        onChange={(e) => setContent(e.target.value)} // Met à jour le contenu de la tâche lors de la modification
         rows="4"
         className="w-full p-2 border border-gray-300 rounded mb-2 text-black"
       />
       <button
-        onClick={updateContent}
+        onClick={updateContent} // Appelle la fonction pour mettre à jour le contenu de la tâche
         className="w-full p-2 bg-blue-500 text-white rounded"
       >
         Enregistrer

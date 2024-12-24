@@ -7,9 +7,9 @@ export async function GET(request) {
 
   try {
     if (!taskId) {
-      console.error('Task ID is required');
+      console.error('Task ID is required'); // Log si l'ID de la tâche est requis
       return new Response(
-        JSON.stringify({ error: 'Task ID is required' }),
+        JSON.stringify({ error: 'Task ID is required' }), // Renvoie une erreur si l'ID de la tâche n'est pas fourni
         {
           status: 400,
           headers: { 'Content-Type': 'application/json' },
@@ -22,15 +22,15 @@ export async function GET(request) {
       .prepare('SELECT id, content, date FROM daily_tasks WHERE task_id = ?')
       .all(taskId);
 
-    console.log('Fetched Daily Tasks:', dailyTasks);
+    console.log('Fetched Daily Tasks:', dailyTasks); // Log des tâches quotidiennes récupérées
     return new Response(JSON.stringify(dailyTasks), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (error) {
-    console.error('Error fetching daily tasks:', error);
+    console.error('Error fetching daily tasks:', error); // Log de l'erreur de récupération des tâches quotidiennes
     return new Response(
-      JSON.stringify({ error: 'Failed to fetch daily tasks', details: error.message }),
+      JSON.stringify({ error: 'Failed to fetch daily tasks', details: error.message }), // Renvoie une erreur en cas d'échec de la récupération des tâches quotidiennes
       {
         status: 500,
         headers: { 'Content-Type': 'application/json' },

@@ -127,7 +127,7 @@ export default function TaskDetail() {
       prevTasks.map((task) =>
         task.id === taskId ? { ...task, completed: !task.completed } : task
       )
-    );
+    ); // Bascule l'état de complétion de la tâche
   };
 
   const tileClassName = ({ date, view }) => {
@@ -136,16 +136,16 @@ export default function TaskDetail() {
       const today = new Date();
       if (taskDates.includes(date.toDateString())) {
         if (date < today) {
-          return 'bg-red-500 text-white';
+          return 'bg-red-500 text-white'; // Marque les dates passées avec une couleur rouge
         }
-        return 'bg-green-500 text-white';
+        return 'bg-green-500 text-white'; // Marque les dates futures avec une couleur verte
       }
     }
     return null;
   };
 
   if (!task) {
-    return <div>Loading...</div>;
+    return <div>Loading...</div>; // Affiche un message de chargement si la tâche n'est pas encore chargée
   }
 
   return (
@@ -154,7 +154,7 @@ export default function TaskDetail() {
         <h2 className="text-xl font-bold mb-4">Tâches pour {selectedDate ? selectedDate.toDateString() : '...'}</h2>
         <ul>
           {dailyTasks
-            .filter((task) => new Date(task.date).toDateString() === (selectedDate ? selectedDate.toDateString() : ''))
+            .filter((task) => new Date(task.date).toDateString() === (selectedDate ? selectedDate.toDateString() : '')) // Filtre les tâches quotidiennes pour la date sélectionnée
             .map((task) => (
               <li key={task.id} className="mb-2 flex items-center">
                 <span className={`text-white ${task.completed ? 'line-through' : ''}`}>{task.content}</span>

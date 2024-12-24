@@ -14,7 +14,7 @@ export async function GET(request) {
 
       if (!task) {
         return new Response(
-          JSON.stringify({ error: 'Task not found' }),
+          JSON.stringify({ error: 'Task not found' }), // Renvoie une erreur si la tâche n'est pas trouvée
           {
             status: 404,
             headers: { 'Content-Type': 'application/json' },
@@ -25,7 +25,7 @@ export async function GET(request) {
       return new Response(JSON.stringify(task), {
         status: 200,
         headers: { 'Content-Type': 'application/json' },
-      });
+      }); // Renvoie la tâche trouvée
     }
 
     // Récupérer toutes les tâches (uniquement `id` et `name` pour la liste principale)
