@@ -44,7 +44,11 @@ export async function DELETE(request, { params }) {
   const { id } = params; // Récupérer l'ID de la tâche à partir des paramètres
 
   try {
-    const result = db.prepare('DELETE FROM tasks WHERE id = ?').run(id); // Supprimer la tâche par ID
+    // Supprimer les tâches du jour associées à la tâche principale
+    db.prepare('DELETE FROM daily_tasks WHERE task_id = ?').run(id);
+
+    // Supprimer la tâche principale
+    const result = db.prepare('DELETE FROM tasks WHERE id = ?').run(id);
 
     if (result.changes === 0) {
       return new Response(JSON.stringify({ error: 'Task not found' }), {
